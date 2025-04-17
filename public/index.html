@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suit Duel</title>
+    <!-- Link the external CSS file -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <!-- Initial Mode Selection -->
+    <div id="mode-selection" class="mode-selection-container">
+        <h1>Suit Duel</h1>
+        <h2>Choose Your Mode:</h2>
+        <button id="play-ai-button">Play vs AI</button>
+        <button id="play-online-button">Play Online</button>
+    </div>
+
+    <!-- Online Game Setup (Initially Hidden) -->
+    <div id="online-setup" class="online-setup-container" style="display: none;">
+        <h2>Play Online</h2>
+        <div>
+            <label for="player-name-input">Enter Your Name:</label>
+            <input type="text" id="player-name-input" placeholder="Your Name" required maxlength="15">
+        </div>
+        <button id="join-game-button">Find Game</button>
+        <p id="connection-status"></p> <!-- To show "Connecting...", "Waiting..." -->
+    </div>
+
+    <!-- Main Game Container (Initially Hidden) -->
+    <div id="game-container" class="game-container" style="display: none;">
+        <!-- Game title can be removed from here if it's already outside -->
+        <!-- <h1>Suit Duel</h1> -->
+
+        <div class="message-area" id="message-area">Welcome!</div>
+
+        <!-- Opponent's Area (Used for AI or Online Opponent) -->
+        <div class="opponent-area">
+            <h2 id="opponent-name">Opponent</h2> <!-- Name will be set by JS -->
+            <div class="health">Health: <span id="opponent-health" class="health-value">20</span></div>
+            <div>Cards: <span id="opponent-card-count">0</span></div>
+            <div class="hand opponent-hand" id="opponent-hand">
+                <!-- Opponent card backs/count rendered here -->
+            </div>
+        </div>
+
+        <!-- Game Info Area -->
+        <div class="game-info">
+            <div>Deck: <span id="deck-count">0</span></div>
+            <div>Discard: <span id="discard-count">0</span> <span id="discard-top"></span></div>
+        </div>
+
+        <!-- Player's Area -->
+        <div class="player-area">
+            <h2 id="player-name-display">You</h2> <!-- Name will be set by JS -->
+            <div class="health">Health: <span id="player-health" class="health-value">20</span></div>
+             <div>Cards: <span id="player-card-count">0</span></div>
+            <div class="hand player-hand" id="player-hand">
+                <!-- Player cards rendered here -->
+            </div>
+             <!-- Discard Button Container -->
+            <div class="player-controls">
+                <button id="discard-button" style="display: none;">Discard Selected</button>
+            </div>
+        </div>
+
+         <!-- Restart button might be repurposed or specific to AI mode -->
+         <button id="restart-button" style="display: none;">Play Again (AI)</button>
+         <button id="leave-online-button" style="display: none;">Leave Game</button> <!-- Optional for online -->
+    </div>
+
+    <!-- Link the external JavaScript file -->
+    <!-- 'defer' ensures HTML is parsed before script runs -->
+    <script src="/client.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "suit-duel-online",
+  "version": "1.0.0",
+  "description": "A multiplayer version of the Suit Duel card game.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^8.2.3"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/YOUR_PROJECT_NAME"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "websockets",
+    "card-game",
+    "multiplayer",
+    "express"
+  ]
+}
