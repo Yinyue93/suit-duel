@@ -1,0 +1,283 @@
+/* General Body and Layout */
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Mode Selection and Online Setup Containers */
+.mode-selection-container,
+.online-setup-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.mode-selection-container h2,
+.online-setup-container h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.mode-selection-container button,
+.online-setup-container button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    margin: 10px;
+}
+
+.online-setup-container div {
+    margin-bottom: 15px;
+}
+
+.online-setup-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.online-setup-container input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80%;
+    max-width: 300px;
+    font-size: 1em;
+}
+
+#connection-status {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #007bff; /* Blue status message */
+    min-height: 1.2em; /* Reserve space */
+}
+
+
+/* Main Game Container */
+.game-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column;
+    gap: 15px; /* Spacing between elements */
+}
+
+h1 { /* General H1 styling if used inside game container */
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Player and Opponent Areas */
+.player-area, .opponent-area {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.player-area h2, .opponent-area h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #555;
+    min-height: 1.5em; /* Prevent layout shift when name changes */
+}
+
+/* Health Display */
+.health {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+.health-value {
+    color: #c00; /* Red for health */
+}
+
+/* Hand Display */
+.hand {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 75px; /* Ensure consistent height even when empty */
+    align-items: center;
+    margin-top: 10px;
+    padding: 5px;
+    border: 1px dashed #eee;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.opponent-area .opponent-hand {
+    justify-content: flex-start; /* Align opponent card backs */
+}
+
+/* Card Styling */
+.card {
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 10px 8px;
+    min-width: 50px;
+    text-align: center;
+    background-color: white;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    font-size: 1.1em;
+    font-weight: bold;
+    user-select: none; /* Prevent text selection */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    position: relative; /* For potential future absolute positioned elements */
+}
+
+/* Card Interactivity (Player Hand Only) */
+.player-area .card:not(.disabled):not(.discard-selection) {
+    cursor: pointer;
+}
+.player-area .card:not(.disabled):not(.discard-selection):hover {
+    transform: translateY(-5px);
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Discard Selection Styling */
+.player-area .card.discard-selection {
+    cursor: pointer;
+    border-color: #aaa;
+}
+.player-area .card.discard-selection:hover {
+     border-color: #007bff; /* Highlight border on hover */
+}
+.player-area .card.selected {
+    border: 2px solid #007bff; /* Blue border */
+    background-color: #e7f3ff; /* Light blue background */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle glow */
+}
+
+/* Disabled Card Styling */
+.player-area .card.disabled {
+     cursor: not-allowed;
+     opacity: 0.6;
+     /* background-color: #eee; */ /* Optional: Different background */
+}
+.player-area .card.disabled:hover {
+    transform: none;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Back Styling (for Opponent Hand) */
+.card-back {
+    border: 1px solid #555;
+    border-radius: 5px;
+    width: 52px; /* Slightly wider than card text */
+    height: 72px; /* Fixed height */
+    background: linear-gradient(135deg, #666 25%, #888 25%, #888 50%, #666 50%, #666 75%, #888 75%, #888 100%);
+    background-size: 10px 10px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    display: inline-block; /* Allow gaps from parent flex */
+}
+
+/* Suit Colors */
+.suit-♥ { color: red; }
+.suit-♦ { color: blue; }
+.suit-♠ { color: black; }
+.suit-♣ { color: green; }
+
+/* Game Info Area (Deck/Discard) */
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 5px; /* Reduced margin */
+    padding: 10px;
+    background-color: #e9e9e9;
+    border-radius: 5px;
+    font-size: 0.95em;
+}
+#discard-top span { /* Ensure top discard card suits are colored */
+    font-weight: bold;
+}
+
+
+/* Message Area */
+.message-area {
+    /* margin-top: 5px; */ /* Reduced margin */
+    padding: 12px;
+    border: 1px solid #ddd;
+    background-color: #ffffe0; /* Light yellow */
+    border-radius: 5px;
+    min-height: 45px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Player Controls (Discard Button Container) */
+.player-controls {
+     display: flex;
+     justify-content: center;
+     margin-top: 10px;
+     min-height: 40px; /* Reserve space */
+}
+
+/* General Button Styling */
+button {
+    padding: 8px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    margin: 5px; /* Spacing around all buttons */
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    background-color: #007bff; /* Default blue */
+    color: white;
+}
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+button:not(:disabled):hover {
+    opacity: 0.9;
+}
+
+/* Specific Button Styles */
+#play-ai-button { background-color: #17a2b8; } /* Teal */
+#play-online-button { background-color: #ffc107; color: #333; } /* Yellow */
+#join-game-button { background-color: #28a745; } /* Green */
+
+#discard-button {
+     background-color: #dc3545; /* Red */
+     color: white;
+}
+ #discard-button:not(:disabled):hover {
+      background-color: #c82333; /* Darker red */
+ }
+
+#restart-button, #leave-online-button {
+    display: block; /* Keep these separate for now */
+    margin: 15px auto 0;
+    background-color: #6c757d; /* Grey */
+    color: white;
+    padding: 10px 20px;
+}
+ #restart-button:not(:disabled):hover,
+ #leave-online-button:not(:disabled):hover {
+     background-color: #5a6268; /* Darker Grey */
+ }
