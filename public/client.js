@@ -313,7 +313,10 @@ function checkGameOverAI() {
         aiWon = true;
     } else if (opponentDead) {
         isOver = true;
-        finalMessage = `${playerName} wins! ${opponentName}'s health reached 0.`;
+        // Fix for grammar - check if playerName is "You" and use correct verb form
+        finalMessage = playerName === "You" 
+            ? `${playerName} win! ${opponentName}'s health reached 0.`
+            : `${playerName} wins! ${opponentName}'s health reached 0.`;
         playerWon = true;
         aiWon = false;
     }
