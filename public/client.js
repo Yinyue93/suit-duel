@@ -963,24 +963,31 @@ function handleWebSocketError(event) {
 function handleWebSocketClose(event) {
     console.log("WebSocket connection closed.", event.code, event.reason);
     const closeMsg = "Connection closed.";
-     if(gameMode === 'online' && !gameOver) {
+    if(gameMode === 'online' && !gameOver) {
         // If game was in progress, treat as disconnect unless already game over
-        setGameMessage( event.reason || closeMsg + " Game may have ended.", true);
+        // Check if message already contains "Game ended" to avoid duplication
+        if (gameMessage && gameMessage.includes("Game ended")) {
+            // Just update UI without changing the message
+            updateGameInfo();
+        } else {
+            // Set new message only if we don't already have a game ended message
+            setGameMessage(event.reason || closeMsg + " Game ended.", true);
+        }
         gameOver = true;
         actionInProgress = false;
         isPlayerTurn = false;
         isDiscarding = false;
         updateGameInfo();
-         leaveOnlineButton.textContent = "Back to Menu";
-         leaveOnlineButton.style.display = 'block';
-     } else if (gameMode === 'online') {
+        leaveOnlineButton.textContent = "Back to Menu";
+        leaveOnlineButton.style.display = 'block';
+    } else if (gameMode === 'online') {
         // If closed during setup or after game over
-         connectionStatusP.textContent = event.reason || closeMsg;
-         if (!gameOver) { // If closed during setup, re-enable join
-             joinGameButton.disabled = false;
-             playerNameInput.disabled = false;
-         }
-     }
+        connectionStatusP.textContent = event.reason || closeMsg;
+        if (!gameOver) { // If closed during setup, re-enable join
+            joinGameButton.disabled = false;
+            playerNameInput.disabled = false;
+        }
+    }
     ws = null;
 }
 
