@@ -1,4 +1,4 @@
-**Game Title: "Suit Duel"**  
+**Test: Game Title: "Suit Duel"**  
 **Players:** 2  
 **Deck:** Standard 52-card French-suited deck (no jokers).  
 
