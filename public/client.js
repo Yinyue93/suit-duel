@@ -141,7 +141,15 @@ function drawCardFromLocalDeck(targetHand, count = 1) {
 async function applyCardEffectAI(card, actorHand, targetHand, actorIsPlayer) {
     const actorName = actorIsPlayer ? playerName : opponentName;
     const targetName = actorIsPlayer ? opponentName : playerName;
-    let message = `${actorName} plays ${card.rank}${card.suit}: `;
+    let message = '';
+    
+    // Fix grammatical issue - use correct verb form for "You"
+    if (actorName === "You") {
+        message = `You play ${card.rank}${card.suit}: `;
+    } else {
+        message = `${actorName} plays ${card.rank}${card.suit}: `;
+    }
+    
     actionInProgress = true; // Lock during effect processing
 
     switch (card.suit) {
