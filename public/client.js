@@ -245,7 +245,14 @@ async function checkHandLimitAI(hand, isPlayer) {
         actionInProgress = true; // Lock during check/discard
         const excess = hand.length - MAX_HAND_SIZE;
         const ownerName = isPlayer ? playerName : opponentName;
-        const reason = `${ownerName} have ${hand.length} cards (limit ${MAX_HAND_SIZE}). Must discard ${excess}.`;
+        
+        // Fix grammar for "You have" vs "Name has"
+        let reason;
+        if (ownerName === "You") {
+            reason = `You have ${hand.length} cards (limit ${MAX_HAND_SIZE}). Must discard ${excess}.`;
+        } else {
+            reason = `${ownerName} has ${hand.length} cards (limit ${MAX_HAND_SIZE}). Must discard ${excess}.`;
+        }
 
         if (isPlayer) {
             // Player needs to discard visually
