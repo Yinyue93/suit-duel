@@ -116,6 +116,7 @@ function drawCardFromLocalDeck(targetHand, count = 1) {
             }
             // Reshuffle for AI mode
             setGameMessage("Deck empty. Shuffling discard pile...", true);
+            SFX.play('shuffle');
             deck = shuffleDeck([...discardPile]);
             discardPile = [];
             // Optional delay can be added here if desired
@@ -134,6 +135,7 @@ function drawCardFromLocalDeck(targetHand, count = 1) {
             break; // Stop drawing if hand limit reached
         }
     }
+    if (drawnCards.length > 0) SFX.play('draw', drawnCards.length);
     return drawnCards; // Return the cards actually drawn
 }
 
@@ -166,6 +168,7 @@ async function applyCardEffectAI(card, actorHand, targetHand, actorIsPlayer) {
                 actualHeal = opponentHealth - healthBefore;
             }
             message += `Healed ${actualHeal} HP.`;
+            SFX.play('heal');
             break;
 
         case '♦': // Actor draws cards
@@ -188,6 +191,7 @@ async function applyCardEffectAI(card, actorHand, targetHand, actorIsPlayer) {
                 playerHealth -= damageAmount;
             }
             message += `Dealt ${damageAmount} damage to ${targetName}.`;
+            SFX.play('damage');
             break;
 
         case '♣': // Target discards
@@ -209,6 +213,7 @@ async function applyCardEffectAI(card, actorHand, targetHand, actorIsPlayer) {
                          .sort((a, b) => b - a); // Sort descending for splice
 
                      message = `AI discards ${actualDiscardCount} card(s).`;
+                     SFX.play('discard');
                      for (const index of indicesToDiscard) {
                          // Check index validity before splicing (safety)
                          if (index >= 0 && index < targetHand.length) {
@@ -274,6 +279,7 @@ async function checkHandLimitAI(hand, isPlayer) {
              setGameMessage(discardMsg, true);
              await new Promise(resolve => setTimeout(resolve, 800)); // Pause to read
 
+             SFX.play('discard');
              for (const index of indicesToDiscard) {
                  // Check index validity before splicing (safety)
                   if (index >= 0 && index < hand.length) {
@@ -352,6 +358,7 @@ function checkGameOverAI() {
         }
         // --- End Fix ---
 
+        SFX.play(playerWon ? 'win' : aiWon ? 'lose' : 'tie');
         setGameMessage(finalMessage, true); // Set message *after* clearing hands
         restartButton.style.display = 'block';
         // updateGameInfo() will be called shortly after this function returns by the caller
@@ -497,6 +504,7 @@ function handleDiscardSelectionClick(event) {
             selectedDiscardIndices.push(cardIndex);
         }
     }
+    SFX.play('select');
     setGameMessage(`Select ${requiredDiscardCount - selectedDiscardIndices.length} more card(s) to discard. (${selectedDiscardIndices.length}/${requiredDiscardCount})`, true);
     updateGameInfo(); // Update selection visuals and button state
 }
@@ -518,6 +526,7 @@ function handleConfirmDiscardClick() {
 
     // Sort indices descending for safe splicing
     selectedDiscardIndices.sort((a, b) => b - a);
+    SFX.play('discard');
 
     if (gameMode === 'ai') {
         // AI Mode: Process discard locally and resolve promise
@@ -580,6 +589,7 @@ function initiatePlayerDiscard(count, reason) {
 
             setTimeout(() => { // Delay to allow message reading
                 let discardedCardsForMessage = [];
+                SFX.play('discard');
                 // Create indices [N-1, N-2, ..., 0] for safe splicing from end
                 const indicesToDiscardDesc = [...Array(playerHand.length).keys()].reverse();
 
@@ -618,6 +628,7 @@ function initiatePlayerDiscard(count, reason) {
             discardCompletionCallback = resolve; // Store resolve for AI mode promise
         }
 
+        SFX.play('alert');
         setGameMessage(`${reason} Select ${requiredDiscardCount} card(s) to discard, then click 'Discard Selected'. (0/${requiredDiscardCount})`, true);
         updateGameInfo(); // Show discard button, enable selection visuals
     });
@@ -626,6 +637,7 @@ function initiatePlayerDiscard(count, reason) {
 
 // --- Event Handlers ---
 function handleModeSelection(event) {
+    SFX.play('click');
     const mode = event.target.id === 'play-ai-button' ? 'ai' : 'online';
     modeSelectionDiv.style.display = 'none'; // Hide mode selection
 
@@ -644,6 +656,7 @@ function handleModeSelection(event) {
 }
 
 function handleJoinGame() {
+    SFX.play('click');
     const name = playerNameInput.value.trim();
     if (!name) {
         connectionStatusP.textContent = "Please enter a name.";
@@ -682,6 +695,7 @@ function handlePlayerCardClick(event) {
     }
 
     actionInProgress = true; // Lock action
+    SFX.play('cardPlay');
 
     if (gameMode === 'ai') {
         // --- AI Mode: Process locally ---
@@ -727,6 +741,7 @@ function handlePlayerCardClick(event) {
 }
 
 function handleRestartClick() {
+    SFX.play('click');
     if (gameMode === 'ai') {
         initAIGame(); // Re-initialize AI game
     }
@@ -734,6 +749,7 @@ function handleRestartClick() {
 
 function handleLeaveOnlineClick() {
     console.log("Leave online game clicked.");
+    SFX.play('click');
     // Regardless of connection state, go back to menu
     resetToModeSelection("Left online game.");
     // ws.close() is handled within resetToModeSelection if ws exists
@@ -800,6 +816,7 @@ function handleWebSocketMessage(event) {
 
             case 'GAME_START':
                 // Server sends initial state for online game
+                SFX.play('start');
                 onlineSetupDiv.style.display = 'none';
                 gameContainerDiv.style.display = 'flex';
                 gameOver = false;
@@ -832,6 +849,12 @@ function handleWebSocketMessage(event) {
 
             case 'GAME_UPDATE':
                 // Server sends updated state after an action
+                // Sound effects based on what changed since the last update
+                if (message.playerHealth < playerHealth || message.opponentHealth < opponentHealth) SFX.play('damage');
+                if (message.playerHealth > playerHealth || message.opponentHealth > opponentHealth) SFX.play('heal');
+                if (message.hand && message.hand.length > playerHand.length) SFX.play('draw', message.hand.length - playerHand.length);
+                if (message.opponentCardCount > opponentCardCount) SFX.play('draw', message.opponentCardCount - opponentCardCount);
+                if (message.opponentCardCount < opponentCardCount && !isPlayerTurn) SFX.play('cardPlay');
                 playerHealth = message.playerHealth;
                 opponentHealth = message.opponentHealth;
                  // Only update hand if server explicitly sends it in the update
@@ -857,6 +880,7 @@ function handleWebSocketMessage(event) {
 
                  // Check if it JUST became our turn (and we're not currently discarding)
                  if (!wasMyTurnBeforeUpdate && isPlayerTurn && !isDiscarding) {
+                    SFX.play('turn');
                     const drawCount = playerHand.length === 0 ? 5 : 1;
                     const drawMsg = drawCount === 5 ? "Hand empty, drawing 5 cards..." : "Drawing 1 card...";
 
@@ -911,6 +935,7 @@ function handleWebSocketMessage(event) {
                 }
                 // --- End Fix ---
 
+                SFX.play(playerLost && opponentLost ? 'tie' : playerLost ? 'lose' : 'win');
                 setGameMessage(gameOverMsgText, true); // Set message *after* potentially clearing state
                 updateGameInfo(); // Update UI to show cleared hands/counts
                 leaveOnlineButton.style.display = 'block';
@@ -918,6 +943,7 @@ function handleWebSocketMessage(event) {
                 break;
 
             case 'PLAYER_DISCONNECTED':
+                SFX.play('error');
                 gameOver = true; // Treat disconnect as game over
                 actionInProgress = false;
                 isDiscarding = false;
@@ -936,6 +962,7 @@ function handleWebSocketMessage(event) {
 
             case 'ERROR':
                  console.error("Error from server:", message.message);
+                 SFX.play('error');
                  setGameMessage(`Server Error: ${message.message}`, true);
                  if (message.unlockAction) { // Server might indicate action can be retried
                     actionInProgress = false;
@@ -1064,6 +1091,7 @@ async function startPlayerTurnAI() {
     // Unlock only if not forced to discard by hand limit check
     if (!isDiscarding) {
        actionInProgress = false;
+       SFX.play('turn');
     }
     updateGameInfo(); // Update UI with new hand/counts and enable controls if unlocked
 }
@@ -1111,6 +1139,7 @@ async function aiTurn() {
             // Remove card from AI hand and add to discard *before* applying effect
             opponentHand.splice(cardToPlayIndex, 1);
             discardPile.push(playedCard);
+            SFX.play('cardPlay');
             updateGameInfo(); // Show card removed from AI count / added to discard
 
             // Apply effect (this function handles awaits internally, including player discard)
